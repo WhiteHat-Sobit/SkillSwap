@@ -1,0 +1,188 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "n": "Алишер Рахимов",
+      "r": "Senior Product Designer",
+      "m": 98,
+      "s": 4.9,
+      "e": 42,
+      "ew": "обмена",
+      "on": 1,
+      "c": "des",
+      "t": [
+        "Figma & Design Systems",
+        "UI/UX Исследования",
+        "Prototyping"
+      ],
+      "l": [
+        "React & Tailwind",
+        "Frontend Basics"
+      ],
+      "ls": [
+        0,
+        0
+      ],
+      "tg": [
+        0,
+        1,
+        0
+      ],
+      "loc": "Душанбе • Онлайн",
+      "a": "~15 мин",
+      "i": "АР"
+    },
+    {
+      "id": 2,
+      "n": "Мадина Саидова",
+      "r": "Full-Stack Dev (Go / React)",
+      "m": 94,
+      "s": 5,
+      "e": 58,
+      "ew": "обменов",
+      "on": 1,
+      "c": "dev",
+      "t": [
+        "Python & FastAPI",
+        "Docker & CI/CD",
+        "PostgreSQL"
+      ],
+      "l": [
+        "Product Management",
+        "Английский Speaking"
+      ],
+      "ls": [
+        0,
+        1
+      ],
+      "tg": [
+        0,
+        0,
+        0
+      ],
+      "loc": "Душанбе (Рудаки) • Офлайн/Онлайн",
+      "a": "~5 мин",
+      "i": "МС"
+    },
+    {
+      "id": 3,
+      "n": "Фарход Каримов",
+      "r": "3D Artist & Motion Director",
+      "m": 89,
+      "s": 4.8,
+      "e": 29,
+      "ew": "обменов",
+      "on": 0,
+      "c": "des",
+      "t": [
+        "Blender 3D Modeling",
+        "After Effects Motion"
+      ],
+      "l": [
+        "Sound Design",
+        "Unreal Engine 5"
+      ],
+      "ls": [
+        0,
+        0
+      ],
+      "tg": [
+        0,
+        0
+      ],
+      "loc": "Онлайн",
+      "a": "~1 час",
+      "i": "ФК",
+      "w": 1
+    },
+    {
+      "id": 4,
+      "n": "Зарина Юсупова",
+      "r": "Brand Strategist & Copywriter",
+      "m": 92,
+      "s": 4.9,
+      "e": 35,
+      "ew": "обменов",
+      "on": 1,
+      "c": "mkt",
+      "t": [
+        "Контент-стратегия",
+        "Storytelling & Pitch"
+      ],
+      "ts": [
+        1,
+        0
+      ],
+      "l": [
+        "Prompt Engineering",
+        "Figma Основы"
+      ],
+      "ls": [
+        0,
+        1
+      ],
+      "loc": "Душанбе",
+      "a": "~20 мин",
+      "i": "ЗЮ"
+    },
+    {
+      "id": 5,
+      "n": "Далер Мирзоев",
+      "r": "Mobile Dev (Flutter & iOS)",
+      "m": 91,
+      "s": 4.9,
+      "e": 47,
+      "ew": "обменов",
+      "on": 1,
+      "c": "dev",
+      "t": [
+        "Flutter & Dart",
+        "App Store Deployment"
+      ],
+      "l": [
+        "UI Micro-animations",
+        "Французский B1"
+      ],
+      "ls": [
+        0,
+        1
+      ],
+      "loc": "Душанбе • Онлайн",
+      "a": "~10 мин",
+      "i": "ДМ"
+    },
+    {
+      "id": 6,
+      "n": "Нигина Назарова",
+      "r": "Data Analyst & Python",
+      "m": 87,
+      "s": 4.8,
+      "e": 24,
+      "ew": "обмена",
+      "on": 1,
+      "c": "dev",
+      "t": [
+        "Data Science Basics",
+        "Pandas & SQL"
+      ],
+      "l": [
+        "Tableau & BI",
+        "Публичные выступления"
+      ],
+      "ls": [
+        0,
+        1
+      ],
+      "loc": "Онлайн",
+      "a": "~30 мин",
+      "i": "НН",
+      "w": 1
+    }
+  ],
+  "swaps": [],
+  "stats": {
+    "members": 1420,
+    "swaps": 3850,
+    "trust": 98
+  }
+}

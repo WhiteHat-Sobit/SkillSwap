@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SkillSwap — Админка</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1128;--card:#141c3a;--line:#232c52;--tx:#e8ecf8;--mu:#8b93b5;--pu:#7c6cf6;--gr:#2ed3a0;--rd:#e0476a;--ser:'Playfair Display',Georgia,serif;box-sizing:border-box}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif}
+button,input{font:inherit;color:inherit}
+header{display:flex;align-items:center;gap:20px;padding:18px max(20px,calc(50% - 560px));background:#0d1533;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-family:var(--ser);font-size:clamp(1.6rem,4vw,2.4rem);margin:0;flex:1}
+.back{color:#a99dff;text-decoration:none;font-weight:500}
+main{max-width:1120px;margin:0 auto;padding:28px 20px 80px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.tabs button{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:11px 20px;font-family:var(--ser);font-weight:700;font-size:14px;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--pu);border-color:var(--pu);color:#fff}
+.tabs b{margin-left:6px;background:rgba(255,255,255,.15);border-radius:99px;padding:2px 9px;font:600 12px 'Inter'}
+.list{display:grid;gap:16px}
+.u{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:14px}
+.u h2{margin:0;font-family:var(--ser);font-size:1.5rem}
+.u .meta{color:var(--mu);font-size:13px;display:flex;gap:14px;flex-wrap:wrap}
+.u .meta a{color:#a99dff}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.lbl{font:700 11px var(--ser);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.g{color:var(--gr)}.p{color:#a99dff}
+.chip{display:inline-block;border-radius:99px;padding:6px 12px;font-size:13px;margin:0 6px 6px 0;background:rgba(124,108,246,.18);color:#c9c2ff}
+.t .chip{background:rgba(46,211,160,.12);color:var(--gr)}
+.sk{display:block;color:#c4cae2;font-size:14px;margin-top:2px}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.acts button{border:0;border-radius:12px;padding:12px 20px;font-family:var(--ser);font-weight:700;font-size:14px;cursor:pointer;color:#fff}
+.ok{background:linear-gradient(90deg,#2ed3a0,#1f9d77)}.no{background:var(--rd)}
+.rej{display:flex;gap:10px;flex-wrap:wrap}
+.rej[hidden]{display:none}
+.rej input{flex:1;min-width:200px;background:#0f1733;border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:0}
+.rej button{background:var(--rd);border:0;border-radius:12px;padding:12px 18px;font-weight:600;cursor:pointer;color:#fff}
+.note{color:#ff9db0;font-size:14px}
+.empty{text-align:center;color:var(--mu);padding:60px 0;font-size:17px}
+h3{font-family:var(--ser);margin:30px 0 4px;font-size:1.3rem}
+.hint{color:var(--mu);font-size:13px;margin:0 0 12px}
+.demo{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:10px}
+.demo button{background:var(--rd);border:0;border-radius:10px;padding:9px 16px;color:#fff;font-weight:600;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,40px);background:#fff;color:#111;border-radius:12px;padding:12px 20px;opacity:0;transition:.3s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header><a class="back" href="/">← На сайт</a><h1>Админка SkillSwap</h1></header>
+<main>
+ <div class="tabs" id="tabs">
+  <button data-s="pending" aria-pressed="true">Заявки<b id="c-pending">0</b></button>
+  <button data-s="approved" aria-pressed="false">Участники<b id="c-approved">0</b></button>
+  <button data-s="rejected" aria-pressed="false">Отклонённые<b id="c-rejected">0</b></button>
+ </div>
+ <div class="list" id="list"></div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tab="pending",lastPending=null,tt;
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2600)}
+async function api(url,method="GET",body){
+ const r=await fetch(url,{method,headers:{"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+ const d=await r.json().catch(()=>({}));
+ if(r.status===401||r.status===403){location.href="/";throw new Error("auth")}
+ if(!r.ok)throw new Error(d.error||"Ошибка");
+ return d;
+}
+const side=(x,cls)=>`<div class="${cls}">${x.cats.map(c=>`<span class="chip">${esc(c)}</span>`).join("")}${x.skills?`<span class="sk">${esc(x.skills)}</span>`:""}</div>`;
+function when(t){const d=new Date(t.replace(" ","T")+"Z");return isNaN(d)?"":d.toLocaleString("ru-RU",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function card(u){
+ const acts=u.status==="pending"?`<button class="ok" data-a="approve">Одобрить</button><button class="no" data-a="ask">Отклонить</button>`
+  :u.status==="approved"?`<button class="no" data-a="ask">Удалить с сайта</button>`:`<button class="ok" data-a="approve">Вернуть на сайт</button>`;
+ return `<article class="u" data-id="${u.id}">
+  <div><h2>${esc(u.name)}</h2><div class="meta"><a href="mailto:${esc(u.email)}">${esc(u.email)}</a><span>Заявка: ${when(u.created)}</span></div></div>
+  <div class="cols"><div class="t"><div class="lbl g">Может научить</div>${side(u.teach,"")}</div><div><div class="lbl p">Хочет научиться</div>${side(u.learn,"")}</div></div>
+  ${u.status==="rejected"&&u.note?`<div class="note">Причина: ${esc(u.note)}</div>`:""}
+  <div class="acts">${acts}</div>
+  <div class="rej" hidden><input maxlength="300" placeholder="Причина (её увидит человек при входе)"><button data-a="reject">Подтвердить</button></div>
+ </article>`;
+}
+function draw(d){
+ const items=d.items.map(card).join("");
+ const empty={pending:"Новых заявок нет",approved:"Пока нет одобренных участников",rejected:"Отклонённых нет"}[tab];
+ let html=items||`<div class="empty">${empty}</div>`;
+ if(tab==="approved"&&d.demo.length)html+=`<h3>Демо-участники из дизайна</h3><p class="hint">У них нет аккаунтов, поэтому запросы им никто не прочитает. Удалите их, когда появятся реальные участники.</p>`+
+  d.demo.map(m=>`<div class="demo" data-demo="${m.id}"><span>${esc(m.name)} — ${esc(m.role)}</span><button data-a="demo">Удалить</button></div>`).join("");
+ $("list").innerHTML=html;
+}
+async function load(poll){
+ const d=await api("/api/admin/users?status="+tab);
+ for(const k of["pending","approved","rejected"])$("c-"+k).textContent=d.counts[k]||0;
+ if(lastPending!==null&&d.counts.pending>lastPending)toast("Новая заявка на регистрацию!");
+ lastPending=d.counts.pending;
+ document.title=(d.counts.pending?`(${d.counts.pending}) `:"")+"SkillSwap — Админка";
+ if(poll&&$("list").contains(document.activeElement)&&document.activeElement.tagName==="INPUT")return;
+ draw(d);
+}
+$("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;tab=b.dataset.s;document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));load()};
+$("list").onclick=async e=>{
+ const b=e.target.closest("button");if(!b)return;
+ const card=b.closest("[data-id]"),id=card&&card.dataset.id;
+ try{
+  if(b.dataset.a==="ask"){const r=card.querySelector(".rej");r.hidden=!r.hidden;if(!r.hidden)r.querySelector("input").focus();return}
+  if(b.dataset.a==="approve"){await api(`/api/admin/users/${id}/approve`,"POST");toast("Участник одобрен и появился на сайте")}
+  if(b.dataset.a==="reject"){await api(`/api/admin/users/${id}/reject`,"POST",{reason:card.querySelector("input").value});toast("Участник удалён, при входе он увидит сообщение")}
+  if(b.dataset.a==="demo"){await api(`/api/admin/members/${b.closest("[data-demo]").dataset.demo}`,"DELETE");toast("Демо-участник удалён")}
+  load();
+ }catch(err){if(err.message!=="auth")toast(err.message)}
+};
+load();setInterval(()=>{if(!document.hidden)load(true).catch(()=>{})},20000);
+</script>
+</body>
+</html>
